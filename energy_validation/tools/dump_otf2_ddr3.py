@@ -19,10 +19,8 @@ def main():
         rate = np.fromfile(infile, np.int32, 1)[0]
         print("Rate: {}".format(rate))
 
-        gain_vdd = 100
-        gain_vpp = 300
-        resistor_vdd = 0.005
-        resistor_vpp = 0.005
+        gain_vdd = 300
+        resistor_vdd = 0.00333
 
         num_channels = np.fromfile(infile, np.int32, 1)[0]
         print("Num channels: {}".format(num_channels))
@@ -37,13 +35,12 @@ def main():
 
             data = np.fromfile(infile, dtype=row_type)
             for points in data:
-                trigger = points[3]
+                trigger = points[2]
                 if np.isinf(points).any():
                     break
                 vdd = ((points[0] / gain_vdd) / resistor_vdd) * points[1]
-                vpp = ((points[2] / gain_vpp) / resistor_vpp) * 2.5
+
                 writer.metric(ticks, m_vdd, vdd)
-                writer.metric(ticks, m_vpp, vpp)
                 writer.metric(ticks, m_trigger, trigger)
 
                 ticks += 1
